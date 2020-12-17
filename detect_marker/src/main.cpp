@@ -8,7 +8,7 @@
  * copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
  *
- * The above copyright notice and this permission notice shall be included in 
+ * The above copyright notice and this permission notice shall be included in
  * all copies or substantial portions of the Software.
  *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
@@ -37,6 +37,8 @@ const char* keys  =
         "DICT_7X7_250=14, DICT_7X7_1000=15, DICT_ARUCO_ORIGINAL = 16}"
         "{h        |false | Print help }"
         "{v        |<none>| Custom video source, otherwise '0' }"
+        "{cw       |<none>| Camera image width }"
+        "{ch       |<none>| Camera image height }"
         ;
 }
 
@@ -82,6 +84,11 @@ int main(int argc, char **argv)
         return 1;
     }
 
+    if(parser.has("cw") && parser.has("ch")) {
+        in_video.set(cv::CAP_PROP_FRAME_WIDTH, parser.get<int>("cw"));
+        in_video.set(cv::CAP_PROP_FRAME_HEIGHT, parser.get<int>("ch"));
+    }
+
     cv::Ptr<cv::aruco::Dictionary> dictionary =
         cv::aruco::getPredefinedDictionary( \
         cv::aruco::PREDEFINED_DICTIONARY_NAME(dictionaryId));
@@ -93,7 +100,7 @@ int main(int argc, char **argv)
         std::vector<int> ids;
         std::vector<std::vector<cv::Point2f>> corners;
         cv::aruco::detectMarkers(image, dictionary, corners, ids);
-        
+
         // If at least one marker detected
         if (ids.size() > 0)
             cv::aruco::drawDetectedMarkers(image_copy, corners, ids);

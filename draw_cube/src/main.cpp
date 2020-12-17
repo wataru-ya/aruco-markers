@@ -8,7 +8,7 @@
  * copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
  *
- * The above copyright notice and this permission notice shall be included in 
+ * The above copyright notice and this permission notice shall be included in
  * all copies or substantial portions of the Software.
  *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
@@ -41,6 +41,8 @@ const char* keys  =
         "{h        |false | Print help }"
         "{l        |      | Actual marker length in meter }"
         "{v        |<none>| Custom video source, otherwise '0' }"
+        "{cw       |      | Camera image width }"
+        "{ch       |      | Camera image height }"
         ;
 }
 
@@ -71,7 +73,7 @@ int main(int argc, char **argv)
     int wait_time = 10;
 
     if (marker_length_m <= 0) {
-        std::cerr << "marker length must be a positive value in meter" 
+        std::cerr << "marker length must be a positive value in meter"
                   << std::endl;
         return 1;
     }
@@ -104,6 +106,11 @@ int main(int argc, char **argv)
     if (!in_video.isOpened()) {
         std::cerr << "failed to open video input: " << videoInput << std::endl;
         return 1;
+    }
+
+    if(parser.has("cw") && parser.has("ch")) {
+        in_video.set(cv::CAP_PROP_FRAME_WIDTH, parser.get<int>("cw"));
+        in_video.set(cv::CAP_PROP_FRAME_HEIGHT, parser.get<int>("ch"));
     }
 
     cv::Mat image, image_copy;
@@ -160,7 +167,7 @@ int main(int argc, char **argv)
                 );
 
                 // This section is going to print the data for all the detected
-                // markers. If you have more than a single marker, it is 
+                // markers. If you have more than a single marker, it is
                 // recommended to change the below section so that either you
                 // only print the data for a specific marker, or you print the
                 // data for each marker separately.

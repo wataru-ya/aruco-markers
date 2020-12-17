@@ -8,7 +8,7 @@
  * copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
  *
- * The above copyright notice and this permission notice shall be included in 
+ * The above copyright notice and this permission notice shall be included in
  * all copies or substantial portions of the Software.
  *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
@@ -38,9 +38,8 @@ const char* keys  =
         "{h        |false | Print help }"
         "{l        |      | Actual marker length in meter }"
         "{v        |<none>| Custom video source, otherwise '0' }"
-        "{h        |false | Print help }"
-        "{l        |      | Actual marker length in meter }"
-        "{v        |<none>| Custom video source, otherwise '0' }"
+        "{cw       |      | Camera image width }"
+        "{ch       |      | Camera image height }"
         ;
 }
 
@@ -64,7 +63,7 @@ int main(int argc, char **argv)
     int wait_time = 10;
 
     if (marker_length_m <= 0) {
-        std::cerr << "marker length must be a positive value in meter" 
+        std::cerr << "marker length must be a positive value in meter"
                   << std::endl;
         return 1;
     }
@@ -99,6 +98,11 @@ int main(int argc, char **argv)
         return 1;
     }
 
+    if(parser.has("cw") && parser.has("ch")) {
+        in_video.set(cv::CAP_PROP_FRAME_WIDTH, parser.get<int>("cw"));
+        in_video.set(cv::CAP_PROP_FRAME_HEIGHT, parser.get<int>("ch"));
+    }
+
     cv::Mat image, image_copy;
     cv::Mat camera_matrix, dist_coeffs;
     std::ostringstream vector_to_marker;
@@ -130,7 +134,7 @@ int main(int argc, char **argv)
             std::vector<cv::Vec3d> rvecs, tvecs;
             cv::aruco::estimatePoseSingleMarkers(corners, marker_length_m,
                     camera_matrix, dist_coeffs, rvecs, tvecs);
-            
+
             // Draw axis for each marker
             for(int i=0; i < ids.size(); i++)
             {

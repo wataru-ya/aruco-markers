@@ -67,6 +67,8 @@ const char* keys  =
         "{@outfile |<none> | Output file with calibrated camera parameters }"
         "{v        |       | Input from video file, if ommited, input comes from camera }"
         "{ci       | 0     | Camera id if input doesnt come from video (-v) }"
+        "{cw       |       | Camera image width }"
+        "{ch       |       | Camera image height }"
         "{dp       |       | File of marker detector parameters }"
         "{rs       | false | Apply refind strategy }"
         "{zt       | false | Assume zero tangential distortion }"
@@ -213,6 +215,11 @@ int main(int argc, char *argv[]) {
     if (!opened) {
         std::cerr << "failed to open video input: " << videoInput << std::endl;
         return 1;
+    }
+
+    if(!parser.has("v") && parser.has("cw") && parser.has("ch")) {
+        inputVideo.set(cv::CAP_PROP_FRAME_WIDTH, parser.get<int>("cw"));
+        inputVideo.set(cv::CAP_PROP_FRAME_HEIGHT, parser.get<int>("ch"));
     }
 
     Ptr<aruco::Dictionary> dictionary =
